@@ -21,11 +21,11 @@
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <header class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">Dashboard Operasional INARA</h1>
+            <h1 class="text-3xl font-bold text-gray-800">Dashboard Operasional Harian</h1>
             <p class="text-gray-500">Rentang Data: <span id="date-range-info"></span></p>
         </header>
 
-        <!-- Filters (Diperbarui) -->
+        <!-- Filters -->
         <div class="flex flex-wrap gap-4 mb-6">
              <div>
                 <label for="month-filter" class="block text-sm font-medium text-gray-700">Filter Bulan:</label>
@@ -94,10 +94,34 @@
             <div class="chart-container"><h3 class="text-lg font-semibold text-gray-700 mb-4">Kontribusi Sesi Waktu</h3><canvas id="dayPartChart"></canvas></div>
         </section>
 
-        <!-- Section 4: Kinerja Outlet -->
+        <!-- Section 4: Tabel Aksi (Diperbarui) -->
         <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="table-container"><h3 class="text-lg font-semibold text-gray-700 mb-4">Top 5 Outlet (Pencapaian Target Bulanan)</h3><table class="w-full"><thead><tr class="text-left text-xs text-gray-500 uppercase"><th class="py-2 px-4">Outlet</th><th class="py-2 px-4">Brand</th><th class="py-2 px-4">Pencapaian</th></tr></thead><tbody id="top-outlets-table" class="divide-y divide-gray-200"></tbody></table></div>
-            <div class="table-container"><h3 class="text-lg font-semibold text-gray-700 mb-4">Bottom 5 Outlet (Pencapaian Target Bulanan)</h3><table class="w-full"><thead><tr class="text-left text-xs text-gray-500 uppercase"><th class="py-2 px-4">Outlet</th><th class="py-2 px-4">Brand</th><th class="py-2 px-4">Pencapaian</th></tr></thead><tbody id="bottom-outlets-table" class="divide-y divide-gray-200"></tbody></table></div>
+            <div class="table-container">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Top 5 Outlet dengan Prime Cost Tertinggi</h3>
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-left text-xs text-gray-500 uppercase">
+                            <th class="py-2 px-4">Outlet</th>
+                            <th class="py-2 px-4">Brand</th>
+                            <th class="py-2 px-4 text-right">Prime Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody id="top-prime-cost-table" class="divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+            <div class="table-container">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Top 5 Outlet dengan Komplain Terbanyak</h3>
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-left text-xs text-gray-500 uppercase">
+                            <th class="py-2 px-4">Outlet</th>
+                            <th class="py-2 px-4">Brand</th>
+                            <th class="py-2 px-4 text-right">Jml Komplain</th>
+                        </tr>
+                    </thead>
+                    <tbody id="top-complaints-table" class="divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
         </section>
         
         <!-- Section 5: Kepuasan Pelanggan -->
