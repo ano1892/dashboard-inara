@@ -27,15 +27,13 @@ body {
     font-weight: 500; /* medium */
 }
 
-/* Gaya untuk nilai utama KPI (UKURAN FONT DIPERKECIL) */
+/* Gaya untuk nilai utama KPI (hanya properti yang diperlukan) */
 .kpi-value {
     color: #1f2937; /* gray-800 */
-    font-size: 1.5rem; /* text-2xl, lebih kecil dari sebelumnya */
-    line-height: 2rem; /* leading-8 */
     font-weight: 700; /* bold */
     margin-top: 0.5rem; /* mt-2 */
     flex-grow: 1; /* Biarkan elemen ini tumbuh untuk mendorong perbandingan ke bawah */
-    word-break: break-word; /* Memastikan teks panjang tidak keluar dari kartu */
+    word-wrap: break-word; /* Memastikan teks panjang tidak keluar dari kartu */
 }
 
 /* Gaya untuk teks perbandingan di KPI */
