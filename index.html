@@ -318,6 +318,8 @@
 
             if (!startDateValue || !endDateValue) return;
 
+            // Mengonversi string tanggal menjadi objek Date
+            // Menambahkan 'T00:00:00' untuk menghindari masalah zona waktu
             const startDate = new Date(startDateValue + 'T00:00:00');
             const endDate = new Date(endDateValue + 'T23:59:59');
 
@@ -325,7 +327,13 @@
             document.getElementById('date-range-info').textContent = `${formatDate(startDate)} - ${formatDate(endDate)}`;
 
             const filteredData = allData.filter(item => {
-                const itemDate = new Date(item.date);
+                // --- PERBAIKAN LOGIKA TANGGAL ---
+                // Memastikan format tanggal dari CSV diparsing dengan benar dan konsisten
+                if (!item.date || typeof item.date !== 'string') return false;
+                const dateParts = item.date.split('-'); // Asumsi format YYYY-MM-DD
+                if (dateParts.length !== 3) return false;
+                const itemDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+                
                 const brandMatch = selectedBrand === 'all' || item.brand === selectedBrand;
                 const regionMatch = selectedRegion === 'all' || item.region === selectedRegion;
                 const dateMatch = itemDate >= startDate && itemDate <= endDate;
@@ -344,7 +352,11 @@
         function updateAllCharts(filteredSelectionData, startDate, endDate) {
             const selectedRegion = document.getElementById('region-filter').value;
             const comparisonData = allData.filter(item => {
-                const itemDate = new Date(item.date);
+                if (!item.date || typeof item.date !== 'string') return false;
+                const dateParts = item.date.split('-');
+                if (dateParts.length !== 3) return false;
+                const itemDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+                
                 const regionMatch = selectedRegion === 'all' || item.region === selectedRegion;
                 const dateMatch = itemDate >= startDate && itemDate <= endDate;
                 return regionMatch && dateMatch;
@@ -356,41 +368,9 @@
             updateSalesByChannelChart(filteredSelectionData);
             updateDayPartChart(filteredSelectionData);
         }
-
-        // --- FUNGSI DIPERBARUI ---
-        function updateKPIs(data) {
-            const totalRevenue = data.reduce((sum, item) => sum + item.revenue, 0);
-            const totalTargetRevenue = data.reduce((sum, item) => sum + item.targetRevenue, 0);
-            const totalTransactions = data.reduce((sum, item) => sum + item.transactions, 0);
-            const avgCheckSize = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
-            const totalCogsValue = data.reduce((sum, item) => sum + (item.revenue * item.cogs), 0);
-            const totalLaborValue = data.reduce((sum, item) => sum + (item.revenue * item.laborCost), 0);
-            
-            // Menghitung persentase untuk setiap metrik
-            const cogsPercentage = totalRevenue > 0 ? (totalCogsValue / totalRevenue) * 100 : 0;
-            const laborCostPercentage = totalRevenue > 0 ? (totalLaborValue / totalRevenue) * 100 : 0;
-            const gpmPercentage = totalRevenue > 0 ? ((totalRevenue - totalCogsValue - totalLaborValue) / totalRevenue) * 100 : 0;
-
-            const avgRating = data.length > 0 ? data.reduce((sum, item) => sum + item.rating, 0) / data.length : 0;
-            const totalRatingCount = data.length * (Math.floor(Math.random() * 5) + 2);
-            const totalComplaints = data.reduce((sum, item) => sum + item.complaints, 0);
-
-            // Update elemen HTML
-            document.getElementById('total-revenue').textContent = formatCurrency(totalRevenue);
-            document.getElementById('total-transactions').textContent = totalTransactions.toLocaleString('id-ID');
-            document.getElementById('avg-check-size').textContent = formatCurrency(avgCheckSize);
-            document.getElementById('gpm-percentage').textContent = `${gpmPercentage.toFixed(1)}%`;
-            document.getElementById('labor-cost-percentage').textContent = `${laborCostPercentage.toFixed(1)}%`;
-            document.getElementById('cogs-percentage').textContent = `${cogsPercentage.toFixed(1)}%`;
-            document.getElementById('avg-rating').textContent = `${avgRating.toFixed(1)}/5`;
-            document.getElementById('rating-count').textContent = `${totalRatingCount} ulasan baru`;
-            document.getElementById('total-complaints').textContent = totalComplaints;
-            document.getElementById('complaints-info').textContent = `Total dalam periode`;
-            renderComparison(totalRevenue, totalTargetRevenue, 'revenue-comparison');
-        }
-
+        function updateKPIs(data) { const totalRevenue = data.reduce((sum, item) => sum + item.revenue, 0); const totalTargetRevenue = data.reduce((sum, item) => sum + item.targetRevenue, 0); const totalTransactions = data.reduce((sum, item) => sum + item.transactions, 0); const avgCheckSize = totalTransactions > 0 ? totalRevenue / totalTransactions : 0; const totalCogsValue = data.reduce((sum, item) => sum + (item.revenue * item.cogs), 0); const totalLaborValue = data.reduce((sum, item) => sum + (item.revenue * item.laborCost), 0); const cogsPercentage = totalRevenue > 0 ? (totalCogsValue / totalRevenue) * 100 : 0; const laborCostPercentage = totalRevenue > 0 ? (totalLaborValue / totalRevenue) * 100 : 0; const gpmPercentage = totalRevenue > 0 ? ((totalRevenue - totalCogsValue - totalLaborValue) / totalRevenue) * 100 : 0; const avgRating = data.length > 0 ? data.reduce((sum, item) => sum + item.rating, 0) / data.length : 0; const totalRatingCount = data.length * (Math.floor(Math.random() * 5) + 2); const totalComplaints = data.reduce((sum, item) => sum + item.complaints, 0); document.getElementById('total-revenue').textContent = formatCurrency(totalRevenue); document.getElementById('total-transactions').textContent = totalTransactions.toLocaleString('id-ID'); document.getElementById('avg-check-size').textContent = formatCurrency(avgCheckSize); document.getElementById('gpm-percentage').textContent = `${gpmPercentage.toFixed(1)}%`; document.getElementById('labor-cost-percentage').textContent = `${laborCostPercentage.toFixed(1)}%`; document.getElementById('cogs-percentage').textContent = `${cogsPercentage.toFixed(1)}%`; document.getElementById('avg-rating').textContent = `${avgRating.toFixed(1)}/5`; document.getElementById('rating-count').textContent = `${totalRatingCount} ulasan baru`; document.getElementById('total-complaints').textContent = totalComplaints; document.getElementById('complaints-info').textContent = `Total dalam periode`; renderComparison(totalRevenue, totalTargetRevenue, 'revenue-comparison'); }
         function destroyChart(chartId) { if (chartInstances[chartId]) { chartInstances[chartId].destroy(); } }
-        function updateDailyRevenueChart(data, startDate, endDate) { destroyChart('dailyRevenueTrendChart'); const ctx = document.getElementById('dailyRevenueTrendChart').getContext('2d'); const dateDiff = (endDate - startDate) / (1000 * 60 * 60 * 24); const labels = []; const dailyData = []; for (let i = 0; i <= dateDiff; i++) { const currentDay = new Date(startDate); currentDay.setDate(startDate.getDate() + i); labels.push(currentDay.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })); dailyData.push(0); } data.forEach(item => { const itemDay = new Date(item.date); const index = Math.floor((itemDay - startDate) / (1000 * 60 * 60 * 24)); if (index >= 0 && index < dailyData.length) { dailyData[index] += item.revenue; } }); chartInstances['dailyRevenueTrendChart'] = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Pendapatan Harian', data: dailyData, borderColor: 'rgba(59, 130, 246, 0.8)', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.3, pointRadius: 3, pointBackgroundColor: 'rgba(59, 130, 246, 1)' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { callback: value => formatCurrency(value) }}}, plugins: { legend: { display: false }, tooltip: { callbacks: { title: (tooltipItems) => `Tanggal ${tooltipItems[0].label}`, label: context => `Pendapatan: ${formatCurrency(context.parsed.y)}` }}} } }); }
+        function updateDailyRevenueChart(data, startDate, endDate) { destroyChart('dailyRevenueTrendChart'); const ctx = document.getElementById('dailyRevenueTrendChart').getContext('2d'); const dateDiff = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24); const labels = []; const dailyData = []; for (let i = 0; i <= dateDiff; i++) { const currentDay = new Date(startDate); currentDay.setDate(startDate.getDate() + i); labels.push(currentDay.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })); dailyData.push(0); } data.forEach(item => { const itemDay = new Date(item.date); const index = Math.round((itemDay.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)); if (index >= 0 && index < dailyData.length) { dailyData[index] += item.revenue; } }); chartInstances['dailyRevenueTrendChart'] = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Pendapatan Harian', data: dailyData, borderColor: 'rgba(59, 130, 246, 0.8)', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.3, pointRadius: 3, pointBackgroundColor: 'rgba(59, 130, 246, 1)' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { callback: value => formatCurrency(value) }}}, plugins: { legend: { display: false }, tooltip: { callbacks: { title: (tooltipItems) => `Tanggal ${tooltipItems[0].label}`, label: context => `Pendapatan: ${formatCurrency(context.parsed.y)}` }}} } }); }
         function updateRevenueByBrandChart(data) { destroyChart('revenueByBrandChart'); const ctx = document.getElementById('revenueByBrandChart').getContext('2d'); const brands = {}; data.forEach(item => { if (!item.brand) return; if (!brands[item.brand]) brands[item.brand] = { revenue: 0, target: 0 }; brands[item.brand].revenue += item.revenue; brands[item.brand].target += item.targetRevenue; }); chartInstances['revenueByBrandChart'] = new Chart(ctx, { type: 'bar', data: { labels: Object.keys(brands), datasets: [{ label: 'Pendapatan Aktual', data: Object.values(brands).map(b => b.revenue), backgroundColor: 'rgba(59, 130, 246, 0.7)', maxBarThickness: 50 }, { label: 'Target Pendapatan', data: Object.values(brands).map(b => b.target), backgroundColor: 'rgba(209, 213, 219, 0.7)', maxBarThickness: 50 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { callback: value => formatCurrency(value) }}}, plugins: { legend: { position: 'bottom', align: 'start' }, tooltip: { callbacks: { label: context => `${context.dataset.label}: ${formatCurrency(context.parsed.y)}` }}} } }); }
         function updateSalesByChannelChart(data) { destroyChart('salesByChannelChart'); const ctx = document.getElementById('salesByChannelChart').getContext('2d'); const channels = data.reduce((acc, item) => { acc.dinein += item.revenue * ((item.channels?.dinein || 0) / 100); acc.takeaway += item.revenue * ((item.channels?.takeaway || 0) / 100); acc.online += item.revenue * ((item.channels?.online || 0) / 100); return acc; }, { dinein: 0, takeaway: 0, online: 0 }); chartInstances['salesByChannelChart'] = new Chart(ctx, { type: 'doughnut', data: { labels: ['Dine-In', 'Takeaway', 'Online Delivery'], datasets: [{ data: Object.values(channels), backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(16, 185, 129, 0.7)', 'rgba(249, 115, 22, 0.7)'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', align: 'start' }, tooltip: { callbacks: { label: context => `${context.label}: ${formatCurrency(context.parsed)}`}}} } }); }
         function updateCogsChart(data) { destroyChart('cogsChart'); const ctx = document.getElementById('cogsChart').getContext('2d'); const brands = {}; data.forEach(item => { if (!item.brand) return; if (!brands[item.brand]) brands[item.brand] = { cogsValue: 0, revenue: 0 }; brands[item.brand].cogsValue += item.revenue * item.cogs; brands[item.brand].revenue += item.revenue; }); const chartLabels = Object.keys(brands); const chartData = chartLabels.map(brand => (brands[brand].revenue > 0 ? (brands[brand].cogsValue / brands[brand].revenue) * 100 : 0)); chartInstances['cogsChart'] = new Chart(ctx, { type: 'bar', data: { labels: chartLabels, datasets: [{ label: 'COGS (%)', data: chartData, backgroundColor: chartData.map(c => c > 38 ? 'rgba(239, 68, 68, 0.7)' : 'rgba(16, 185, 129, 0.7)'), maxBarThickness: 35 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: 10 }, scales: { x: { beginAtZero: true, max: 60 } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: context => `${context.parsed.x.toFixed(1)}%` } } } } }); }
