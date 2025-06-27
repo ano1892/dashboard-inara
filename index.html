@@ -25,15 +25,15 @@
             <p class="text-gray-500">Rentang Data: <span id="date-range-info"></span></p>
         </header>
 
-        <!-- Filters -->
-        <div class="flex flex-wrap gap-4 mb-6">
+        <!-- Filters (Diperbarui dengan Input Tanggal) -->
+        <div class="flex flex-wrap items-end gap-4 mb-6">
              <div>
-                <label for="month-filter" class="block text-sm font-medium text-gray-700">Filter Bulan:</label>
-                <select id="month-filter" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"></select>
+                <label for="start-date" class="block text-sm font-medium text-gray-700">Tanggal Mulai:</label>
+                <input type="date" id="start-date" class="mt-1 block w-full pl-3 pr-2 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
             </div>
              <div>
-                <label for="year-filter" class="block text-sm font-medium text-gray-700">Filter Tahun:</label>
-                <select id="year-filter" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"></select>
+                <label for="end-date" class="block text-sm font-medium text-gray-700">Tanggal Akhir:</label>
+                <input type="date" id="end-date" class="mt-1 block w-full pl-3 pr-2 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
             </div>
             <div>
                 <label for="brand-filter" class="block text-sm font-medium text-gray-700">Filter Brand:</label>
@@ -47,66 +47,71 @@
 
         <!-- Section 1: Executive Summary -->
         <section class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">Ringkasan Eksekutif Bulanan</h2>
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Ringkasan Eksekutif</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-                <!-- Kartu KPI dengan class font yang disesuaikan -->
                 <div class="kpi-card">
                     <h3 class="kpi-title">Total Pendapatan</h3>
-                    <p id="total-revenue" class="kpi-value text-2xl">Rp 0</p>
+                    <p id="total-revenue" class="kpi-value">Rp 0</p>
                     <div id="revenue-comparison" class="kpi-comparison"></div>
                 </div>
                 <div class="kpi-card">
                     <h3 class="kpi-title">Total Transaksi</h3>
-                    <p id="total-transactions" class="kpi-value text-3xl">0</p>
+                    <p id="total-transactions" class="kpi-value">0</p>
                     <div id="transactions-comparison" class="kpi-comparison"></div>
                 </div>
                 <div class="kpi-card">
                     <h3 class="kpi-title">Avg. Check Size</h3>
-                    <p id="avg-check-size" class="kpi-value text-2xl">Rp 0</p>
+                    <p id="avg-check-size" class="kpi-value">Rp 0</p>
                     <div id="avg-check-comparison" class="kpi-comparison"></div>
                 </div>
                 <div class="kpi-card">
                     <h3 class="kpi-title">Gross Profit Margin</h3>
-                    <p id="gpm" class="kpi-value text-3xl">0%</p>
+                    <p id="gpm" class="kpi-value">0%</p>
                     <div id="gpm-comparison" class="kpi-comparison"></div>
                 </div>
                 <div class="kpi-card">
                     <h3 class="kpi-title">Prime Cost</h3>
-                    <p id="prime-cost" class="kpi-value text-3xl">0%</p>
+                    <p id="prime-cost" class="kpi-value">0%</p>
                     <div id="prime-cost-comparison" class="kpi-comparison"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Sisa HTML tidak ada perubahan -->
+        <!-- Grafik Tren Harian -->
         <section class="mb-8">
              <div class="chart-container" style="height: 450px;">
                  <h3 class="text-lg font-semibold text-gray-700 mb-4">Tren Pendapatan Harian</h3>
                  <canvas id="dailyRevenueTrendChart"></canvas>
             </div>
         </section>
+
+        <!-- Section 2 & 3: Analisis & Efisiensi -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-             <div class="lg:col-span-2 chart-container"><h3 class="text-lg font-semibold text-gray-700 mb-4">Pendapatan per Brand (Bulanan)</h3><canvas id="revenueByBrandChart"></canvas></div>
+             <div class="lg:col-span-2 chart-container"><h3 class="text-lg font-semibold text-gray-700 mb-4">Pendapatan per Brand</h3><canvas id="revenueByBrandChart"></canvas></div>
             <div class="chart-container"><h3 class="text-lg font-semibold text-gray-700 mb-4">Penjualan per Channel</h3><canvas id="salesByChannelChart"></canvas></div>
             <div class="chart-container"><h3 class="text-lg font-semibold text-gray-700 mb-4">Analisis COGS (%)</h3><canvas id="cogsChart"></canvas></div>
             <div class="chart-container"><h3 class="text-lg font-semibold text-gray-700 mb-4">Analisis Biaya Tenaga Kerja (%)</h3><canvas id="laborChart"></canvas></div>
             <div class="chart-container"><h3 class="text-lg font-semibold text-gray-700 mb-4">Kontribusi Sesi Waktu</h3><canvas id="dayPartChart"></canvas></div>
         </section>
+
+        <!-- Section 4: Tabel Aksi -->
         <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div class="table-container"><h3 class="text-lg font-semibold text-gray-700 mb-4">Top 5 Outlet dengan Prime Cost Tertinggi</h3><table class="w-full"><thead><tr class="text-left text-xs text-gray-500 uppercase"><th class="py-2 px-4">Outlet</th><th class="py-2 px-4">Brand</th><th class="py-2 px-4 text-right">Prime Cost</th></tr></thead><tbody id="top-prime-cost-table" class="divide-y divide-gray-200"></tbody></table></div>
             <div class="table-container"><h3 class="text-lg font-semibold text-gray-700 mb-4">Top 5 Outlet dengan Komplain Terbanyak</h3><table class="w-full"><thead><tr class="text-left text-xs text-gray-500 uppercase"><th class="py-2 px-4">Outlet</th><th class="py-2 px-4">Brand</th><th class="py-2 px-4 text-right">Jml Komplain</th></tr></thead><tbody id="top-complaints-table" class="divide-y divide-gray-200"></tbody></table></div>
         </section>
+        
+        <!-- Section 5: Kepuasan Pelanggan -->
         <section class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">Kepuasan Pelanggan (Bulanan)</h2>
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Kepuasan Pelanggan</h2>
              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                  <div class="kpi-card">
                      <h3 class="kpi-title">Skor Rata-rata Ulasan</h3>
-                     <p id="avg-rating" class="kpi-value text-3xl">0/5</p>
+                     <p id="avg-rating" class="kpi-value">0/5</p>
                      <p id="rating-count" class="text-sm text-gray-500 mt-auto pt-2">0 ulasan baru</p>
                 </div>
                 <div class="kpi-card">
                     <h3 class="kpi-title">Total Komplain</h3>
-                    <p id="total-complaints" class="kpi-value text-3xl">0</p>
+                    <p id="total-complaints" class="kpi-value">0</p>
                     <p id="complaints-info" class="text-sm text-gray-500 mt-auto pt-2"></p>
                 </div>
             </div>
