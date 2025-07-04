@@ -243,15 +243,11 @@
         function setDefaultDateFilters() {
             const endDateInput = document.getElementById('end-date');
             const startDateInput = document.getElementById('start-date');
-
             if (allData.length === 0) return;
-
             allData.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
             const latestDate = new Date(allData[0].date);
             const thirtyDaysAgo = new Date(allData[0].date);
             thirtyDaysAgo.setDate(latestDate.getDate() - 29);
-
             endDateInput.value = latestDate.toISOString().split('T')[0];
             startDateInput.value = thirtyDaysAgo.toISOString().split('T')[0];
         }
@@ -262,14 +258,11 @@
             try {
                 const response = await fetch(googleSheetUrl);
                 if (!response.ok) throw new Error(`Gagal memuat data: Status ${response.status}.`);
-                
                 const csvText = await response.text();
                 allData = parseCSV(csvText);
-                
                 populateBrandAndRegionFilters();
                 setDefaultDateFilters();
                 updateDashboard();
-
             } catch (error) {
                 console.error("Gagal memuat data dari Google Sheet:", error);
                 alert(`Terjadi kesalahan saat mengambil data. Pastikan:\n1. URL CSV sudah benar.\n2. Sheet sudah dipublikasikan.\n3. Format data di dalam Sheet sudah sesuai.`);
@@ -278,6 +271,7 @@
             }
         }
 
+        // --- FUNGSI DIPERBARUI ---
         function parseCSV(text) {
             const rows = text.trim().split('\n');
             const headers = rows[0].split(',').map(h => h.trim());
@@ -286,8 +280,13 @@
                 let obj = {};
                 headers.forEach((header, index) => {
                     const numericHeaders = ['outletId', 'revenue', 'targetRevenue', 'transactions', 'cogs', 'laborCost', 'rating', 'complaints', 'dayParts_breakfast', 'dayParts_lunch', 'dayParts_dinner', 'channels_dinein', 'channels_takeaway', 'channels_online'];
+                    
                     if (numericHeaders.includes(header)) {
-                        obj[header] = parseFloat(values[index]) || 0;
+                        // Hapus semua titik (pemisah ribuan) sebelum parsing
+                        const cleanedValue = (values[index] || '').replace(/\./g, '');
+                        // Ganti koma desimal dengan titik jika ada
+                        const finalValue = cleanedValue.replace(/,/g, '.');
+                        obj[header] = parseFloat(finalValue) || 0;
                     } else {
                         obj[header] = values[index];
                     }
@@ -301,7 +300,6 @@
         function populateBrandAndRegionFilters() {
             const brandFilter = document.getElementById('brand-filter');
             const regionFilter = document.getElementById('region-filter');
-            
             const brands = [...new Set(allData.map(item => item.brand))].filter(Boolean);
             const regions = [...new Set(allData.map(item => item.region))].filter(Boolean);
             brandFilter.innerHTML = '<option value="all">Semua Brand</option>';
@@ -318,8 +316,6 @@
 
             if (!startDateValue || !endDateValue) return;
 
-            // Mengonversi string tanggal menjadi objek Date
-            // Menambahkan 'T00:00:00' untuk menghindari masalah zona waktu
             const startDate = new Date(startDateValue + 'T00:00:00');
             const endDate = new Date(endDateValue + 'T23:59:59');
 
@@ -327,13 +323,10 @@
             document.getElementById('date-range-info').textContent = `${formatDate(startDate)} - ${formatDate(endDate)}`;
 
             const filteredData = allData.filter(item => {
-                // --- PERBAIKAN LOGIKA TANGGAL ---
-                // Memastikan format tanggal dari CSV diparsing dengan benar dan konsisten
                 if (!item.date || typeof item.date !== 'string') return false;
-                const dateParts = item.date.split('-'); // Asumsi format YYYY-MM-DD
+                const dateParts = item.date.split('-');
                 if (dateParts.length !== 3) return false;
                 const itemDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-                
                 const brandMatch = selectedBrand === 'all' || item.brand === selectedBrand;
                 const regionMatch = selectedRegion === 'all' || item.region === selectedRegion;
                 const dateMatch = itemDate >= startDate && itemDate <= endDate;
@@ -356,7 +349,6 @@
                 const dateParts = item.date.split('-');
                 if (dateParts.length !== 3) return false;
                 const itemDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-                
                 const regionMatch = selectedRegion === 'all' || item.region === selectedRegion;
                 const dateMatch = itemDate >= startDate && itemDate <= endDate;
                 return regionMatch && dateMatch;
