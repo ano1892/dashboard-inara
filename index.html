@@ -271,22 +271,30 @@
             }
         }
 
-        // --- FUNGSI DIPERBARUI ---
+        // --- FUNGSI DIPERBARUI DENGAN DEBUGGING ---
         function parseCSV(text) {
             const rows = text.trim().split('\n');
             const headers = rows[0].split(',').map(h => h.trim());
-            return rows.slice(1).map(row => {
+            console.log("Headers ditemukan:", headers); // Debugging
+
+            return rows.slice(1).map((row, rowIndex) => {
                 const values = row.split(',').map(v => v.trim());
                 let obj = {};
                 headers.forEach((header, index) => {
                     const numericHeaders = ['outletId', 'revenue', 'targetRevenue', 'transactions', 'cogs', 'laborCost', 'rating', 'complaints', 'dayParts_breakfast', 'dayParts_lunch', 'dayParts_dinner', 'channels_dinein', 'channels_takeaway', 'channels_online'];
                     
                     if (numericHeaders.includes(header)) {
+                        const originalValue = values[index] || '';
                         // Hapus semua titik (pemisah ribuan) sebelum parsing
-                        const cleanedValue = (values[index] || '').replace(/\./g, '');
+                        const cleanedValue = originalValue.replace(/\./g, '');
                         // Ganti koma desimal dengan titik jika ada
                         const finalValue = cleanedValue.replace(/,/g, '.');
                         obj[header] = parseFloat(finalValue) || 0;
+
+                        // Log khusus untuk kolom 'transactions' untuk 5 baris pertama
+                        if (header === 'transactions' && rowIndex < 5) {
+                            console.log(`Baris ${rowIndex + 2}: Kolom 'transactions' -> Original: '${originalValue}', Cleaned: '${cleanedValue}', Parsed: ${obj[header]}`);
+                        }
                     } else {
                         obj[header] = values[index];
                     }
