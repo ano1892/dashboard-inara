@@ -271,32 +271,28 @@
             }
         }
 
-        // --- FUNGSI DIPERBARUI DENGAN DEBUGGING ---
+        // --- FUNGSI DIPERBARUI ---
         function parseCSV(text) {
             const rows = text.trim().split('\n');
             const headers = rows[0].split(',').map(h => h.trim());
-            console.log("Headers ditemukan:", headers); // Debugging
-
-            return rows.slice(1).map((row, rowIndex) => {
+            return rows.slice(1).map(row => {
                 const values = row.split(',').map(v => v.trim());
                 let obj = {};
                 headers.forEach((header, index) => {
+                    const value = values[index] || '';
                     const numericHeaders = ['outletId', 'revenue', 'targetRevenue', 'transactions', 'cogs', 'laborCost', 'rating', 'complaints', 'dayParts_breakfast', 'dayParts_lunch', 'dayParts_dinner', 'channels_dinein', 'channels_takeaway', 'channels_online'];
                     
                     if (numericHeaders.includes(header)) {
-                        const originalValue = values[index] || '';
-                        // Hapus semua titik (pemisah ribuan) sebelum parsing
-                        const cleanedValue = originalValue.replace(/\./g, '');
-                        // Ganti koma desimal dengan titik jika ada
-                        const finalValue = cleanedValue.replace(/,/g, '.');
-                        obj[header] = parseFloat(finalValue) || 0;
-
-                        // Log khusus untuk kolom 'transactions' untuk 5 baris pertama
-                        if (header === 'transactions' && rowIndex < 5) {
-                            console.log(`Baris ${rowIndex + 2}: Kolom 'transactions' -> Original: '${originalValue}', Cleaned: '${cleanedValue}', Parsed: ${obj[header]}`);
+                        // Ganti koma desimal dengan titik terlebih dahulu
+                        let finalValue = value.replace(/,/g, '.');
+                        // Hanya hapus titik jika itu adalah pemisah ribuan
+                        // (yaitu, jika ada lebih dari 1 titik dan itu bukan bagian dari desimal)
+                        if ((finalValue.match(/\./g) || []).length > 1) {
+                            finalValue = finalValue.replace(/\./g, '');
                         }
+                        obj[header] = parseFloat(finalValue) || 0;
                     } else {
-                        obj[header] = values[index];
+                        obj[header] = value;
                     }
                 });
                 obj.dayParts = { breakfast: obj.dayParts_breakfast || 0, lunch: obj.dayParts_lunch || 0, dinner: obj.dayParts_dinner || 0 };
